@@ -23,11 +23,14 @@ def see_channel(channel, ticks=50):
 
 
 
-def load_brainvision_data(participant, path="data/", experiment="", reference=['TP7', 'TP9']):
+def load_brainvision_data(participant, path="data/", experiment="", reference=None):
     """
     """
     raw = mne.io.read_raw_brainvision("data/" + participant + "/" + participant + "_" + experiment + ".vhdr", eog=('HEOG', 'VEOG'), misc=['PHOTO'], montage="easycap-M1", preload=True)
-    raw.set_eeg_reference(reference)
+    if reference is None:
+        raw.set_eeg_reference()
+    else:
+        raw.set_eeg_reference(reference)
     return(raw)
 
 
