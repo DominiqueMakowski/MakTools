@@ -8,13 +8,14 @@ n.start(False)
 
 
 
+
 def see_channel(channel, ticks=50):
     """
     """
     data, times = channel[:]
     plt.clf()
     plt.figure(figsize=(40,4))
-    matplotlib.pyplot.xticks(list(range(0,int(max(times)),50)))
+    plt.xticks(list(range(0,int(max(times)),50)))
     plt.plot(times, data.T)
     plt.show()
 #    plt.savefig('plot.png', format='png', dpi=1000)
@@ -22,16 +23,16 @@ def see_channel(channel, ticks=50):
 
 
 
-def load_brainvision_data(participant, path="data/", experiment="Fiction3"):
+def load_brainvision_data(participant, path="data/", experiment="", reference=['TP7', 'TP9']):
     """
     """
     raw = mne.io.read_raw_brainvision("data/" + participant + "/" + participant + "_" + experiment + ".vhdr", eog=('HEOG', 'VEOG'), misc=['PHOTO'], montage="easycap-M1", preload=True)
-    raw.set_eeg_reference()
+    raw.set_eeg_reference(reference)
     return(raw)
 
 
 
-def add_events(raw, participant, path="data/", extension=".xlsx", experiment="Fiction3", stim_channel="PHOTO", treshold=0.14, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
+def add_events(raw, participant, path="data/", extension=".xlsx", experiment="Fiction3", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
     """
     """
     signal, time_index = raw.copy().pick_channels([stim_channel])[:]
