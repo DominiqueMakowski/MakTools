@@ -122,7 +122,7 @@ def eeg_load(participant, path="data/", experiment="", system="brainvision", ref
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all", topo=False):
+def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all", topo=False, path=""):
     """
     """
     reject = {
@@ -179,7 +179,7 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all"
         #                                  layout_scale = 2
                                           )
         if save is True:
-            fig.savefig('plots/all_' + str(name) +  '.png', format='png', dpi=1000)
+            fig.savefig(path + str(name) +  '.png', format='png', dpi=1000)
             
             
 # ==============================================================================
