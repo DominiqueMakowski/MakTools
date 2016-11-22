@@ -162,7 +162,7 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all"
     if topo is False:
         fig = mne.combine_evoked([epochs.average()]).plot_joint()
         if save is True:
-            fig.savefig('plots/all_' + str(name) +  '.png', format='png', dpi=1000)
+            fig.savefig(path + str(name) +  '.png', format='png', dpi=1000)
         
         
     if topo is True:
