@@ -188,12 +188,15 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all"
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_filter(raw, notch=True, method="iir"):
+def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
     if notch == True:
         raw.notch_filter(np.arange(50, 201, 50),
                          phase='zero',
                          method=method
                          )
+    raw.filter(lowpass, 
+               highpass, 
+               method=method)
     return(raw)
     
     
