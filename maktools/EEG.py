@@ -1,14 +1,18 @@
 import mne
 import numpy as np
 import pandas as pd
-import matplotlib
 from matplotlib import pyplot as plt
 import neuropsydia as n
 n.start(False)
 
-
-
-
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
 def see_channel(channel, ticks=50):
     """
     """
@@ -22,11 +26,20 @@ def see_channel(channel, ticks=50):
 #    plt.savefig('foo.png')
 
 
-
-def load_brainvision_data(participant, path="data/", experiment="", reference=None):
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def load_brainvision_raw(participant, path="data/", experiment="", system="brainvision", reference=None):
     """
     """
-    raw = mne.io.read_raw_brainvision("data/" + participant + "/" + participant + "_" + experiment + ".vhdr", eog=('HEOG', 'VEOG'), misc=['PHOTO'], montage="easycap-M1", preload=True)
+    if system == "brainvision":
+        extension = ".vhdr"
+    raw = mne.io.read_raw_brainvision(path + participant + "/" + participant + "_" + experiment + extension, eog=('HEOG', 'VEOG'), misc=['PHOTO'], montage="easycap-M1", preload=True)
     if reference is None:
         raw.set_eeg_reference()
     else:
@@ -34,8 +47,15 @@ def load_brainvision_data(participant, path="data/", experiment="", reference=No
     return(raw)
 
 
-
-def add_events(raw, participant, path="data/", extension=".xlsx", experiment="Fiction3", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def add_events(raw, participant, path="data/", stimdata_extension=".xlsx", experiment="", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
     """
     """
     signal, time_index = raw.copy().pick_channels([stim_channel])[:]
@@ -49,7 +69,7 @@ def add_events(raw, participant, path="data/", extension=".xlsx", experiment="Fi
                                             number=number,
                                             after=after,
                                             before=before)
-    trigger_list = pd.read_excel(path + participant + "/" + participant + "_" + experiment + extension)
+    trigger_list = pd.read_excel(path + participant + "/" + participant + "_" + experiment + stimdata_extension)
     trigger_list = trigger_list.sort_values("Order")
 
     triggers = {}
@@ -64,4 +84,32 @@ def add_events(raw, participant, path="data/", extension=".xlsx", experiment="Fi
 
     events, event_id = n.create_mne_events(events_onset, events_list)
     raw.add_events(events, stim_channel="STI 014")
+    return(raw, events, event_id)
+    
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def load_eeg(participant, path="data/", experiment="", system="brainvision", reference=None, stimdata_extension=".xlsx", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
+    """
+    """
+    raw = load_brainvision_raw(participant, path=path, experiment=experiment, system=system, reference=reference)
+    raw, events, event_id = add_events(raw=raw,
+                                           participant=participant,
+                                           path=path,
+                                           stimdata_extension=stimdata_extension,
+                                           experiment=experiment,
+                                           stim_channel=stim_channel,
+                                           treshold=treshold,
+                                           upper=upper,
+                                           number=number,
+                                           pause=pause,
+                                           after=after,
+                                           before=before,
+                                           condition1=condition1,
+                                           condition2=condition2)
     return(raw, events, event_id)
