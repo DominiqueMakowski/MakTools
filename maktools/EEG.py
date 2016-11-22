@@ -209,10 +209,11 @@ def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_ica(raw, method='fastica', random_state=23, plot=False):
+def eeg_ica(raw, method='fastica', n_components=20, random_state=23, plot=False):
     """
     """
-    ica = mne.preprocessing.ICA(method=method,  # for comparison with EEGLAB try "extended-infomax" here
+    ica = mne.preprocessing.ICA(n_components=n_components,
+                                method=method,  # for comparison with EEGLAB try "extended-infomax" here
                                 random_state=random_state  # random seed
                                 )
 
@@ -230,7 +231,7 @@ def eeg_ica(raw, method='fastica', random_state=23, plot=False):
     raw = ica.apply(raw)
     
     if plot is True:
-        fig = ica.plot_components()[0]
+        ica.plot_components()[0]
     return(raw)
     
     
