@@ -122,7 +122,7 @@ def eeg_load(participant, path="data/", experiment="", system="brainvision", ref
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, step="", topo=False):
+def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all", topo=False):
     reject = {
 #        "eeg": 4000e-13,
         "eog": eog_reject  # Adjust with caution
@@ -160,7 +160,7 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, step="", t
     if topo is False:
         fig = mne.combine_evoked([epochs.average()]).plot_joint()
         if save is True:
-            fig.savefig('plots/all_' + str(step) +  '.png', format='png', dpi=1000)
+            fig.savefig('plots/all_' + str(name) +  '.png', format='png', dpi=1000)
         
         
     if topo is True:
@@ -177,7 +177,7 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, step="", t
         #                                  layout_scale = 2
                                           )
         if save is True:
-            fig.savefig('plots/all_' + str(step) +  '.png', format='png', dpi=1000)
+            fig.savefig('plots/all_' + str(name) +  '.png', format='png', dpi=1000)
             
             
 # ==============================================================================
