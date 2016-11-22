@@ -123,6 +123,8 @@ def eeg_load(participant, path="data/", experiment="", system="brainvision", ref
 # ==============================================================================
 # ==============================================================================
 def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all", topo=False):
+    """
+    """
     reject = {
 #        "eeg": 4000e-13,
         "eog": eog_reject  # Adjust with caution
@@ -199,5 +201,53 @@ def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
                method=method)
     return(raw)
     
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_ica(raw, method='fastica', random_state=23, plot=False):
+    """
+    """
+    ica = mne.preprocessing.ICA(method=method,  # for comparison with EEGLAB try "extended-infomax" here
+                                random_state=random_state  # random seed
+                                )
+
+    picks = mne.pick_types(raw.info, meg=False, eeg=True, eog=True, ecg=False, stim=False, exclude='bads')
+    ica.fit(raw, picks=picks, decim=3)
+
+    # create one EOG trials
+    eog_epochs = mne.preprocessing.create_eog_epochs(raw,
+                                                     picks=picks)
+    # find via correlation the ICA components
+    eog_inds, scores = ica.find_bads_eog(eog_epochs)
+
+
+    ica.exclude.extend(eog_inds)
+    raw = ica.apply(raw)
+    
+    if plot is True:
+        fig = ica.plot_components()[0]
+    return(raw)
     
     
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_ssp(raw, plot=False):
+    """
+    """
+    projs, eog_events = mne.preprocessing.compute_proj_eog(raw, average=True, n_grad=0, n_mag=0, n_eeg=2)
+    eog_projs = projs[-2:]
+    if plot is True:
+        mne.viz.plot_projs_topomap(eog_projs, layout=mne.channels.find_layout(raw.info))
+    raw.info['projs'] += eog_projs
+    return(raw)
