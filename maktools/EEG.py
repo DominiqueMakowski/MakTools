@@ -1,4 +1,5 @@
 import mne
+import nolds  # Fractal
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -209,7 +210,7 @@ def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_eog_ica(raw, method='fastica', n_components=20, random_state=23, plot=False):
+def eeg_eog_ica(raw, method='fastica', n_components=20, random_state=23, plot_sources=False, plot=False):
     """
     """
     ica = mne.preprocessing.ICA(n_components=n_components,
@@ -226,6 +227,8 @@ def eeg_eog_ica(raw, method='fastica', n_components=20, random_state=23, plot=Fa
     # find via correlation the ICA components
     eog_inds, scores = ica.find_bads_eog(eog_epochs)
 
+    if plot_sources==True:
+        ica.plot_sources(raw)
 
     ica.exclude.extend(eog_inds)
     raw = ica.apply(raw)
@@ -326,3 +329,58 @@ def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, pr
     if remove_eog == True:
         epochs.pick_types(meg=False, eeg=True)
     return(epochs)
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_fractal_dim(epochs):
+    """
+    """
+
+    df = epochs.to_data_frame(index=["epoch", "time", "condition"])
+
+    # Separate indexes
+    index = df.index.tolist()
+    epochs = []
+    times = []
+    events = []
+    for i in index:
+        epochs.append(i[0])
+        times.append(i[1])
+        events.append(i[2])
+
+
+
+    data = {
+            "Entropy": {},
+#            "hurst": {}
+            }
+
+    n.time.reset()
+    for epoch in set(epochs):
+        subset = df.loc[epoch]
+
+        data["Entropy"][epoch] = []
+#        data["hurst"][epoch] = []
+
+        for channel in subset:
+            data["Entropy"][epoch].append(nolds.sampen(subset[channel]))
+#            data["hurst"][epoch].append(nolds.hurst_rs(subset[channel]))
+        data["Entropy"][epoch] = np.mean(data["entropy"][epoch])
+#        data["hurst"][epoch] = np.mean(data["hurst"][epoch])
+
+
+
+        print(str(round((epoch+1)/len(set(epochs))*100,2)) + "% Complete")
+        time = n.time.get(reset=False)/1000
+        time = time/(epoch+1)
+        time = (time * (len(set(epochs))-epoch))/60
+        print("Remaining time: " + str(round(time, 2)) + 'min')
+
+    df = pd.DataFrame.from_dict(data)
+    return(df)
