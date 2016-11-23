@@ -99,6 +99,10 @@ def eeg_load(participant, path="", experiment="", system="brainvision", referenc
     """
     """
     raw = load_brainvision_raw(participant, path=path, experiment=experiment, system=system, reference=reference)
+
+    raw.info["subject_info"] = participant
+    raw.info["proj_name"] = experiment
+
     raw, events, event_id = add_events(raw=raw,
                                            participant=participant,
                                            path=path,
@@ -416,5 +420,5 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
         print(str(round((epoch+1)/len(set(epochs))*100,2)) + "% complete, remaining time: " + str(round(time, 2)) + 'min')
 
     df = pd.DataFrame.from_dict(data)
-    df["Epoch"] = list(set(events))
-    return(df)
+#    df["Epoch"] = list(set(events))
+    return(df, list(set(events)))
