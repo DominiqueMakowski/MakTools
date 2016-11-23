@@ -94,7 +94,7 @@ def add_events(raw, participant, path="data/", stimdata_extension=".xlsx", exper
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_load(participant, path="data/", experiment="", system="brainvision", reference=None, stimdata_extension=".xlsx", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
+def eeg_load(participant, path="", experiment="", system="brainvision", reference=None, stimdata_extension=".xlsx", stim_channel="PHOTO", treshold=0.04, upper=False, number=45, pause=None, after=0, before=None, condition1=None, condition2=None):
     """
     """
     raw = load_brainvision_raw(participant, path=path, experiment=experiment, system=system, reference=reference)
@@ -290,8 +290,11 @@ def eeg_eog_window(raw, duration=0.5):
 def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True):
     """
     """
-    # Peak-to-peak rejection parameters (amplitude ranges as floats)
-    reject = {"eog": eog_reject}
+    if eog_reject is not None:
+        # Peak-to-peak rejection parameters (amplitude ranges as floats)
+        reject = {"eog": eog_reject}
+    else:
+        reject = None
 
     picks = mne.pick_types(raw.info,
                            meg=False,
