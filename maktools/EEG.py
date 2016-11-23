@@ -290,7 +290,7 @@ def eeg_eog_window(raw, duration=0.5):
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True, remove_eog=True):
+def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True, remove_eog=True, baseline=(None, 0)):
     """
     """
     if eog_reject is not None:
@@ -318,7 +318,7 @@ def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, pr
                         reject=reject,  # Adjust values carefully
                         proj=proj,  # With SSP projections
                         detrend=detrend,  # "None", 1: Linear detrend, 0 DC detrend,
-                        baseline=(None, 0),
+                        baseline=baseline,
                         preload = True
                         )
 
