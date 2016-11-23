@@ -279,3 +279,44 @@ def eeg_eog_window(raw, duration=0.5):
                                       orig_time=raw.info['meas_date'])
     return(raw)
 
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True):
+    """
+    """
+    # Peak-to-peak rejection parameters (amplitude ranges as floats)
+    reject = {"eog": eog_reject}
+
+    picks = mne.pick_types(raw.info,
+                           meg=False,
+                           eeg=True,
+                           eog=True,
+                           stim=False,
+                           exclude='bads'
+                           )
+
+    epochs = mne.Epochs(raw,
+                        events=events,
+                        event_id=event_id,
+                        tmin=tmin,
+                        tmax=tmax,
+                        picks=picks,
+                        add_eeg_ref=True,
+                        reject_by_annotation=True,
+                        reject=reject,  # Adjust values carefully
+                        proj=proj,  # With SSP projections
+                        detrend=detrend,  # "None", 1: Linear detrend, 0 DC detrend,
+                        baseline=(None, 0),
+                        preload = True
+                        )
+
+    # Drop bads
+    if drop_bad == True:
+        epochs.drop_bad()
+    return(raw)
