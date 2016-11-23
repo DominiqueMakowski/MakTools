@@ -420,5 +420,5 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
         print(str(round((epoch+1)/len(set(epochs))*100,2)) + "% complete, remaining time: " + str(round(time, 2)) + 'min')
 
     df = pd.DataFrame.from_dict(data)
-    df["Epoch"] = n.remove_following_duplicates(events)
-    return(df)
+#    df["Epoch"] = n.remove_following_duplicates(events)
+    return(df, events)
