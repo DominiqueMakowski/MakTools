@@ -101,9 +101,6 @@ def eeg_load(participant, path="", experiment="", system="brainvision", referenc
     """
     raw = load_brainvision_raw(participant, path=path, experiment=experiment, system=system, reference=reference)
 
-    raw.info["subject_info"] = participant
-    raw.info["proj_name"] = experiment
-
     raw, events, event_id = add_events(raw=raw,
                                            participant=participant,
                                            path=path,
