@@ -421,4 +421,4 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
 
     df = pd.DataFrame.from_dict(data)
 #    df["Epoch"] = n.remove_following_duplicates(events)
-    return(df, events)
+    return(df, events, epochs)
