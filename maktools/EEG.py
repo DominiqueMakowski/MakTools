@@ -371,7 +371,7 @@ def eeg_fractal_dim(epochs):
         for channel in subset:
             data["Entropy"][epoch].append(nolds.sampen(subset[channel]))
 #            data["hurst"][epoch].append(nolds.hurst_rs(subset[channel]))
-        data["Entropy"][epoch] = np.mean(data["entropy"][epoch])
+        data["Entropy"][epoch] = np.mean(data["Entropy"][epoch])
 #        data["hurst"][epoch] = np.mean(data["hurst"][epoch])
 
 
