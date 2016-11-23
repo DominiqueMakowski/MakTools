@@ -2,6 +2,7 @@ import mne
 import nolds  # Fractal
 import numpy as np
 import pandas as pd
+import re
 from matplotlib import pyplot as plt
 import neuropsydia as n
 n.start(False)
@@ -420,5 +421,12 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
         print(str(round((epoch+1)/len(set(epochs))*100,2)) + "% complete, remaining time: " + str(round(time, 2)) + 'min')
 
     df = pd.DataFrame.from_dict(data)
-#    df["Epoch"] = n.remove_following_duplicates(events)
-    return(df, events, epochs)
+
+    list_events = []
+    for i in range(len(events)):
+        list_events.append(events[i] + "_" + str(epochs[i]))
+
+    list_events = n.remove_following_duplicates(list_events)
+    list_events = [re.sub('_\d+', '', i) for i in list_events]
+    df["Epoch"] = list_events
+    return(df)
