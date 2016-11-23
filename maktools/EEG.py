@@ -3,6 +3,7 @@ import nolds  # Fractal
 import numpy as np
 import pandas as pd
 import re
+import matplotlib
 from matplotlib import pyplot as plt
 import neuropsydia as n
 n.start(False)
@@ -427,3 +428,96 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
     list_events = [re.sub('_\d+', '', i) for i in list_events]
     df["Epoch"] = list_events
     return(df)
+
+
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_topo_erp(evoked, line_colors=("red"), line_width=0.5, background_color="black", font_color="white", save=False, name="topo_erp", dpi=1000):
+    """
+    """
+    fig = mne.viz.plot_evoked_topo(evoked,
+                               fig_facecolor=background_color,
+                               axis_facecolor=background_color,
+                               font_color=font_color,
+                               show=False,
+                               color=line_colors)
+
+    fig.subplots_adjust(hspace=5)  # Not sure it changes anything though.
+    for line in fig.findobj(matplotlib.lines.Line2D):
+        line.set_linewidth(line_width)
+
+    fig.show()
+    if save == True:
+        fig.savefig(name + ".png", format='png', dpi=dpi)
+
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_select_electrodes(include="all", exclude=None, hemisphere="both", include_central=True):
+    """
+    """
+    sensors = ['AF3', 'AF4', 'AF7', 'AF8', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'CP1', 'CP2', 'CP3', 'CP4', 'CP5', 'CP6', 'CPz', 'Cz', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'FC1', 'FC2', 'FC3', 'FC4', 'FC5', 'FC6', 'Fp1', 'Fp2', 'FT10', 'FT7', 'FT8', 'FT9', 'O1', 'O2', 'Oz', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'PO3', 'PO4', 'PO7', 'PO8', 'POz', 'Pz', 'FCz', 'T7', 'T8', 'TP10', 'TP7', 'TP8', 'TP9', 'AFz']
+
+    if include != "all":
+        sensors = [s for s in sensors if include in s]
+
+    if exclude != None:
+        if isinstance(exclude, str):
+            exclude = [exclude]
+        for to_exclude in exclude:
+            sensors = [s for s in sensors if to_exclude not in s]
+
+    if hemisphere != "both":
+        if include_central == False:
+            if hemisphere == "left":
+                sensors = [s for s in sensors if "1" in s or "3" in s or "5" in s or "7" in s or "9" in s]
+            if hemisphere == "right":
+                sensors = [s for s in sensors if "2" in s or "4" in s or "6" in s or "8" in s or "10" in s]
+        else:
+            if hemisphere == "left":
+                sensors = [s for s in sensors if "1" in s or "3" in s or "5" in s or "7" in s or "9" in s or "z" in s]
+            if hemisphere == "right":
+                sensors = [s for s in sensors if "2" in s or "4" in s or "6" in s or "8" in s or "10" in s or "z" in s]
+
+
+    return(sensors)
+
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_average_per_epoch(epochs, include="all", exclude=None, hemisphere="both", include_central=True, time_start=0, time_end=0.4):
+    """
+    """
+    epochs.pick_channels(eeg_select_electrodes(include=include, exclude=exclude, hemisphere=hemisphere, include_central=include_central))
+
+
+    df = epochs.to_data_frame(index=["epoch", "time", "condition"])
+
+    # Separate indexes
+    index = df.index.tolist()
+    epochs = []
+    times = []
+    events = []
+    for i in index:
+        epochs.append(i[0])
+        times.append(i[1])
+        events.append(i[2])
