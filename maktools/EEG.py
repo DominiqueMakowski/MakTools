@@ -415,6 +415,6 @@ def eeg_fractal_dim(epochs, entropy=True, hurst=True, dfa=False, lyap_r=False, l
         time = (time * (len(set(epochs))-epoch))/60
         print(str(round((epoch+1)/len(set(epochs))*100,2)) + "% complete, remaining time: " + str(round(time, 2)) + 'min')
 
-    df["Epoch"] = list(set(events))
     df = pd.DataFrame.from_dict(data)
+    df["Epoch"] = list(set(events))
     return(df)
