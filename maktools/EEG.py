@@ -287,7 +287,7 @@ def eeg_eog_window(raw, duration=0.5):
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True):
+def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, proj=True, detrend=1, drop_bad=True, remove_eog=True):
     """
     """
     if eog_reject is not None:
@@ -322,4 +322,7 @@ def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, pr
     # Drop bads
     if drop_bad == True:
         epochs.drop_bad()
+
+    if remove_eog == True:
+        epochs.pick_types(meg=False, eeg=True)
     return(epochs)
