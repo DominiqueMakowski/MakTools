@@ -85,7 +85,7 @@ def add_events(raw, participant, path="data/", stimdata_extension=".xlsx", exper
     events, event_id = n.create_mne_events(events_onset, events_list)
     raw.add_events(events, stim_channel="STI 014")
     return(raw, events, event_id)
-    
+
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
@@ -113,7 +113,7 @@ def eeg_load(participant, path="data/", experiment="", system="brainvision", ref
                                            condition1=condition1,
                                            condition2=condition2)
     return(raw, events, event_id)
-    
+
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
@@ -153,18 +153,18 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all"
                         detrend=1,  # "None", 1: Linear detrend, 0 DC detrend,
                         baseline=(None, 0)  #
                         )
-    
+
     # Drop bads
     epochs.drop_bad()
-    
-    
+
+
     # Plot
     if topo is False:
         fig = mne.combine_evoked([epochs.average()]).plot_joint()
         if save is True:
             fig.savefig(path + str(name) +  '.png', format='png', dpi=1000)
-        
-        
+
+
     if topo is True:
         fig = mne.viz.plot_evoked_topo([epochs.average()],
         #                                  fig_background="black",
@@ -180,8 +180,8 @@ def eeg_plot_all(raw, events, event_id, eog_reject=600e-6, save=True, name="all"
                                           )
         if save is True:
             fig.savefig(path + str(name) +  '.png', format='png', dpi=1000)
-            
-            
+
+
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
@@ -196,11 +196,11 @@ def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
                          phase='zero',
                          method=method
                          )
-    raw.filter(lowpass, 
-               highpass, 
+    raw.filter(lowpass,
+               highpass,
                method=method)
     return(raw)
-    
+
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
@@ -209,7 +209,7 @@ def eeg_filter(raw, lowpass=1, highpass=40, notch=True, method="iir"):
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_ica(raw, method='fastica', n_components=20, random_state=23, plot=False):
+def eeg_eog_ica(raw, method='fastica', n_components=20, random_state=23, plot=False):
     """
     """
     ica = mne.preprocessing.ICA(n_components=n_components,
@@ -229,12 +229,12 @@ def eeg_ica(raw, method='fastica', n_components=20, random_state=23, plot=False)
 
     ica.exclude.extend(eog_inds)
     raw = ica.apply(raw)
-    
+
     if plot is True:
         ica.plot_components()[0]
     return(raw)
-    
-    
+
+
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
@@ -243,7 +243,7 @@ def eeg_ica(raw, method='fastica', n_components=20, random_state=23, plot=False)
 # ==============================================================================
 # ==============================================================================
 # ==============================================================================
-def eeg_ssp(raw, plot=False):
+def eeg_eog_ssp(raw, plot=False):
     """
     """
     projs, eog_events = mne.preprocessing.compute_proj_eog(raw, average=True, n_grad=0, n_mag=0, n_eeg=2)
@@ -252,3 +252,30 @@ def eeg_ssp(raw, plot=False):
         mne.viz.plot_projs_topomap(eog_projs, layout=mne.channels.find_layout(raw.info))
     raw.info['projs'] += eog_projs
     return(raw)
+
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+def eeg_eog_window(raw, duration=0.5):
+    """
+    Cover the whole blink with full duration.
+    """
+    average_eog = mne.preprocessing.create_eog_epochs(raw).average()
+    print('We found %i EOG events' % average_eog.nave)
+
+    eog_events = mne.preprocessing.find_eog_events(raw)
+    n_blinks = len(eog_events)
+    onset = eog_events[:, 0] / raw.info['sfreq'] - (duration/2)
+    duration = np.repeat(duration, n_blinks)
+    raw.annotations = mne.Annotations(onset,
+                                      duration,
+                                      ['bad blink'] * n_blinks,
+                                      orig_time=raw.info['meas_date'])
+    return(raw)
+
