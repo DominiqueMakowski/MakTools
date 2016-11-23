@@ -319,4 +319,4 @@ def eeg_epoching(raw, events, event_id, tmin=-0.2, tmax=1, eog_reject=600e-6, pr
     # Drop bads
     if drop_bad == True:
         epochs.drop_bad()
-    return(raw)
+    return(epochs)
