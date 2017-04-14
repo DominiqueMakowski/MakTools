@@ -1,6 +1,6 @@
 import mne
 
-raw = mne.io.read_raw_fif("example_raw.fif", preload=True)
+raw = mne.io.read_raw_fif("example_raw.fif", preload=True) # Data corresponds to 5 min of EEG resting state recording.
 
 #==============================================================================
 # Problems with crop
