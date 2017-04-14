@@ -17,7 +17,7 @@ print(raw.first_samp)
 
 
 #==============================================================================
-# Problems with filtering
+# Problems with ICA
 #==============================================================================
 
 raw.filter(1, 40)  # 1Hz high pass is often helpful for fitting ICA
